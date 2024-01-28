@@ -1,4 +1,5 @@
 use rsfilename::*;
+use rsfilename::components::*;
 use std::collections::HashMap;
 
 #[test]
