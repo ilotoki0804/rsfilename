@@ -48,11 +48,25 @@ pub enum ReplaceMethod {
     Remove,
 }
 
-impl ReplaceMethod {
+/// 직접 만드는 대신 ReplaceMethod.compile()을 이용하세요.
+pub struct ReplaceMethodTableConstructor {
+    pub replace_method: ReplaceMethod,
+    pub table: HashMap<char, char>,
+}
+
+impl ReplaceMethodTableConstructor {
+    fn new(replace_method: ReplaceMethod) -> Self {
+        let construct_table = Self::construct_table(&replace_method);
+        Self {
+            replace_method,
+            table: construct_table,
+        }
+    }
+
     /// 기존 문자에 변경될 문자를 각각 대응한 HashMap을 생성합니다.
-    pub fn construct_table(&self) -> HashMap<char, char> {
-        match self {
-            Self::Fullwidth(replace_char) => {
+    fn construct_table(replace_method: &ReplaceMethod) -> HashMap<char, char> {
+        match replace_method {
+            ReplaceMethod::Fullwidth(replace_char) => {
                 let mut table = HashMap::new();
                 for i in 0..32 {
                     table.insert(char::from(i), replace_char.get_char());
@@ -62,7 +76,7 @@ impl ReplaceMethod {
                 }
                 table
             },
-            Self::Replace(replace_char) => {
+            ReplaceMethod::Replace(replace_char) => {
                 let mut table = HashMap::new();
                 for i in 0..32 {
                     table.insert(char::from(i), replace_char.get_char());
@@ -72,8 +86,16 @@ impl ReplaceMethod {
                 }
                 table
             }
-            Self::Remove => Self::construct_table(&Self::Replace(ReplaceChar::Charactor('\0')))
+            ReplaceMethod::Remove => Self::construct_table(
+                &ReplaceMethod::Replace(ReplaceChar::Charactor('\0'))
+            ),
         }
+    }
+}
+
+impl ReplaceMethod {
+    pub fn compile(self) -> ReplaceMethodTableConstructor {
+        ReplaceMethodTableConstructor::new(self)
     }
 }
 
@@ -198,8 +220,13 @@ pub fn is_safe_name(name: &String, only_check_creatable: bool, strict_check: boo
 }
 
 /// 안전한 이름으로 변환된 이름을 리턴합니다.
-pub fn to_safe_name(name: &String, replace_method: &ReplaceMethod, dot_handling_policy: &DotHandlingPolicy) -> String {
-    let table = replace_method.construct_table();
+pub fn to_safe_name(
+    name: &String,
+    replace_method_table: ReplaceMethodTableConstructor,
+    dot_handling_policy: DotHandlingPolicy
+) -> String {
+    let table = replace_method_table.table;
+    let replace_method = &replace_method_table.replace_method;
     let mut name_chars: Vec<char> = name.chars().map(|chr| {
         if let Some(replaced) = table.get(&chr) {
             *replaced
@@ -249,7 +276,7 @@ pub fn to_safe_name(name: &String, replace_method: &ReplaceMethod, dot_handling_
             DotHandlingPolicy::NotCorrect => {},
             DotHandlingPolicy::Replace(replace_char) => match replace_char {
                 ReplaceChar::Space => panic!("Cannot replace to space. Use DotHandlingPolicy::Remove instead."),
-                _ => replace(replace_char, &mut name_chars),
+                _ => replace(&replace_char, &mut name_chars),
             }
             DotHandlingPolicy::Remove => remove(&mut name_chars),
             DotHandlingPolicy::ReplaceWithReplaceMethod => match replace_method {
@@ -296,14 +323,14 @@ pub fn simply_to_safe_name(name: &str, fullwidth: bool) -> String {
     if fullwidth {
         to_safe_name(
             &name.to_string(),
-            &ReplaceMethod::Fullwidth(ReplaceChar::Underscore),
-            &DotHandlingPolicy::ReplaceWithReplaceMethod
+            ReplaceMethod::Fullwidth(ReplaceChar::Underscore).compile(),
+            DotHandlingPolicy::ReplaceWithReplaceMethod
         )
     } else {
         to_safe_name(
             &name.to_string(),
-            &ReplaceMethod::Replace(ReplaceChar::Underscore),
-            &DotHandlingPolicy::ReplaceWithReplaceMethod
+            ReplaceMethod::Replace(ReplaceChar::Underscore).compile(),
+            DotHandlingPolicy::ReplaceWithReplaceMethod,
         )
     }
 }
