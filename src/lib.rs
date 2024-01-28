@@ -6,7 +6,7 @@
 //! 
 //! ```rust
 //! use rsfilename::*;
-//! assert_eq!("hello？.txt.．", simply_to_safe_name("  hello?.txt.."));
+//! assert_eq!("hello？.txt.．", simply_to_safe_name("  hello?.txt..", true));
 //! ```
 
 use std::collections::HashMap;
