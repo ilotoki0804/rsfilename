@@ -1,6 +1,6 @@
 //! # rsfilename
 //! 
-//! Windows와 macOS, Linux에서 안전한 파일명을 만듦니다.
+//! Windows와 macOS, Linux에서 안전한 파일명을 만듭니다.
 //! 
 //! Python 구현을 보고 싶다면 다음 링크를 참고하세요: [pyfilename](https://github.com/ilotoki0804/pyfilename)
 //! 
@@ -285,7 +285,7 @@ pub fn to_safe_name(name: &String, replace_method: &ReplaceMethod, dot_handling_
     name_chars.clone().into_iter().collect::<String>()
 }
 
-/// 간단하게 안전한 파일명을 만듦니다.
+/// 간단하게 안전한 파일명을 만듭니다.
 /// 
 /// to_safe_name은 인자가 많아 간단히 사용하기는 어렵습니다.
 /// 간단히 사용할 목적으로 가장 무난한 인자를 선택해 사용하도록 제작된 함수입니다.
