@@ -230,6 +230,11 @@ fn test_to_safe_name() {
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
         DotHandlingPolicy::Remove)
     );
+    assert_eq!("hello.txt", to_safe_name(
+        &"hello.txt.  ..  . .".to_string(),
+        ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
+        DotHandlingPolicy::Remove)
+    );
 
     // 빈 문자열 테스트
     assert_eq!("!", to_safe_name(

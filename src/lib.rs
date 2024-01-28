@@ -135,7 +135,7 @@ pub fn to_safe_name(
 
     fn remove(name_chars: &mut Vec<char>) {
         while let Some(last_char) = name_chars.last() {
-            if *last_char == '.' {
+            if *last_char == '.' || *last_char == ' ' {
                 name_chars.pop();
             } else {
                 break;
