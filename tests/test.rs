@@ -282,3 +282,9 @@ fn test_to_safe_name_panic() {
         &DotHandlingPolicy::Replace(ReplaceChar::Space)
     );
 }
+
+#[test]
+fn test_simply_to_safe_name() {
+    assert_eq!("hel＊lo.txt....．", simply_to_safe_name("hel*lo.txt.....", true));
+    assert_eq!("hel_lo.txt...._", simply_to_safe_name("hel*lo.txt.....", false));
+}
