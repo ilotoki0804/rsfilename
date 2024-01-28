@@ -298,7 +298,7 @@ pub fn to_safe_name(
         ReplaceMethod::Replace(replace_char) => replace_char.get_char(),
     };
     if replace_char == '.' {
-        replace_char = '_'
+        replace_char = '_';
     }
 
     if is_name_reserved(&name_chars.clone().into_iter().collect::<String>(), true) {
@@ -324,7 +324,7 @@ pub fn simply_to_safe_name(name: &str, fullwidth: bool) -> String {
         to_safe_name(
             &name.to_string(),
             ReplaceMethod::Fullwidth(ReplaceChar::Underscore).compile(),
-            DotHandlingPolicy::ReplaceWithReplaceMethod
+            DotHandlingPolicy::ReplaceWithReplaceMethod,
         )
     } else {
         to_safe_name(
