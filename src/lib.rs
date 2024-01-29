@@ -16,7 +16,7 @@ use crate::components::*;
 /// 이름이 Windows에서 예약되었는지를 확인합니다.
 /// 
 /// Windows 11과 Windows 10은 서로 다른 이름 정책을 사용합니다. Windows 10이 더 restrictive한 정책을 사용합니다.
-/// strict_check가 true이면 Windows 10과 Windows 11에 모두 호환되는 예약어 검사가 사용되고,
+/// strict가 true이면 Windows 10과 Windows 11에 모두 호환되는 예약어 검사가 사용되고,
 /// false이면 Windows 11과만 호환되는 검사가 사용됩니다.
 pub fn is_name_reserved(name: &String, strict: bool) -> bool {
     let reserved_names = if strict {
@@ -36,11 +36,13 @@ pub fn is_name_reserved(name: &String, strict: bool) -> bool {
         return false;
     }
 
-    if name.len() >= 3 && reserved_names.iter().any(|e| e == &name_vec[..3].into_iter().collect::<String>()) {
+    if name.len() >= 3 && reserved_names.iter().any(
+            |e| e.chars().collect::<Vec<_>>() == &name_vec[..3]) {
         return &name_vec[3] == &'.';
     }
 
-    if name.len() >= 4 && reserved_names.iter().any(|e| e == &name_vec[..4].into_iter().collect::<String>()) {
+    if name.len() >= 4 && reserved_names.iter().any(
+            |e| e.chars().collect::<Vec<_>>() == &name_vec[..4]) {
         return &name_vec[4] == &'.';
     }
 
@@ -58,7 +60,7 @@ pub fn is_name_reserved(name: &String, strict: bool) -> bool {
 /// only_check_creatable가 true일 경우 1번 경우에 해당하는 경우 false를 리턴하고, 나머지 경우에는 true일 리턴합니다.
 /// false일 경우 1번, 2번 경우에 대해 false를 리턴하고, 3번 경우에 true를 리턴합니다.
 /// 
-/// strict_check는 예약어와 관련 있습니다. is_name_reserved의 문서를 참고하세요.
+/// strict는 예약어와 관련 있습니다. is_name_reserved의 문서를 참고하세요.
 pub fn is_safe_name(name: &String, only_check_creatable: bool, strict: bool) -> bool {
     for not_allowed_char in NOT_ALLOWED_CHARS {
         for char_in_name in name.chars() {
