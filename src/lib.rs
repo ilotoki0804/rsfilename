@@ -94,11 +94,11 @@ pub fn is_safe_name(name: &String, only_check_creatable: bool, strict_check: boo
 /// 안전한 이름으로 변환된 이름을 리턴합니다.
 pub fn to_safe_name(
     name: &String,
-    replace_method_table: ReplaceMethodTableConstructor,
+    compiled_replace_method: ReplaceMethodTableConstructor,
     dot_handling_policy: DotHandlingPolicy
 ) -> String {
-    let table = replace_method_table.table;
-    let replace_method = &replace_method_table.replace_method;
+    let table = compiled_replace_method.table;
+    let replace_method = &compiled_replace_method.replace_method;
     let mut name_chars: Vec<char> = name.chars().map(|chr| {
         if let Some(replaced) = table.get(&chr) {
             *replaced
