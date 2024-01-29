@@ -18,8 +18,8 @@ use crate::components::*;
 /// Windows 11과 Windows 10은 서로 다른 이름 정책을 사용합니다. Windows 10이 더 restrictive한 정책을 사용합니다.
 /// strict_check가 true이면 Windows 10과 Windows 11에 모두 호환되는 예약어 검사가 사용되고,
 /// false이면 Windows 11과만 호환되는 검사가 사용됩니다.
-pub fn is_name_reserved(name: &String, strict_check: bool) -> bool {
-    let reserved_names = if strict_check {
+pub fn is_name_reserved(name: &String, strict: bool) -> bool {
+    let reserved_names = if strict {
         NOT_ALLOWED_NAMES.to_vec()
     } else {
         NOT_ALLOWED_NAMES_WIN11.to_vec()
@@ -32,7 +32,7 @@ pub fn is_name_reserved(name: &String, strict_check: bool) -> bool {
         return true;
     }
 
-    if !strict_check {
+    if !strict {
         return false;
     }
 
@@ -59,7 +59,7 @@ pub fn is_name_reserved(name: &String, strict_check: bool) -> bool {
 /// false일 경우 1번, 2번 경우에 대해 false를 리턴하고, 3번 경우에 true를 리턴합니다.
 /// 
 /// strict_check는 예약어와 관련 있습니다. is_name_reserved의 문서를 참고하세요.
-pub fn is_safe_name(name: &String, only_check_creatable: bool, strict_check: bool) -> bool {
+pub fn is_safe_name(name: &String, only_check_creatable: bool, strict: bool) -> bool {
     for not_allowed_char in NOT_ALLOWED_CHARS {
         for char_in_name in name.chars() {
             if not_allowed_char == char_in_name {
@@ -68,7 +68,7 @@ pub fn is_safe_name(name: &String, only_check_creatable: bool, strict_check: boo
         }
     }
 
-    if is_name_reserved(name, strict_check) {
+    if is_name_reserved(name, strict) {
         return false;
     }
 
@@ -84,7 +84,7 @@ pub fn is_safe_name(name: &String, only_check_creatable: bool, strict_check: boo
         return false;
     }
 
-    if strict_check && name.chars().next().unwrap_or(' ') == ' ' {
+    if strict && name.chars().next().unwrap_or(' ') == ' ' {
         return false;
     }
 
