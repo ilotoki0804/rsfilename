@@ -171,7 +171,7 @@ pub fn to_safe_name(
         ReplaceMethod::Remove => '_',
         ReplaceMethod::Replace(replace_char) => replace_char.get_char(),
     };
-    if replace_char == '.' {
+    if replace_char == '.' || replace_char == ' ' {
         replace_char = '_';
     }
 
