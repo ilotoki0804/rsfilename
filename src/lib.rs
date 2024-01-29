@@ -97,7 +97,8 @@ pub fn is_safe_name(name: &String, only_check_creatable: bool, strict: bool) -> 
 pub fn to_safe_name(
     name: &String,
     compiled_replace_method: ReplaceMethodTableConstructor,
-    dot_handling_policy: DotHandlingPolicy
+    dot_handling_policy: DotHandlingPolicy,
+    strict: bool,
 ) -> String {
     let table = compiled_replace_method.table;
     let replace_method = &compiled_replace_method.replace_method;
@@ -110,11 +111,14 @@ pub fn to_safe_name(
     }).filter(|chr| *chr != '\0').collect();
 
     // Remove following/trailing spaces
-    let length = name_chars.len();
-    for i in 0..length {
-        if name_chars[i] != ' ' {
-            name_chars = name_chars[i..].to_vec();
-            break;
+    if strict {
+        // Windows 11에서는 following space를 제거하지 않는다.
+        let length = name_chars.len();
+        for i in 0..length {
+            if name_chars[i] != ' ' {
+                name_chars = name_chars[i..].to_vec();
+                break;
+            }
         }
     }
     let length = name_chars.len();
@@ -175,7 +179,7 @@ pub fn to_safe_name(
         replace_char = '_';
     }
 
-    if is_name_reserved(&name_chars.clone().into_iter().collect::<String>(), true) {
+    if is_name_reserved(&name_chars.clone().into_iter().collect::<String>(), strict) {
         name_chars.insert(0, replace_char);
     }
 
@@ -199,12 +203,14 @@ pub fn simply_to_safe_name(name: &str, fullwidth: bool) -> String {
             &name.to_string(),
             ReplaceMethod::Fullwidth(ReplaceChar::Underscore).compile(),
             DotHandlingPolicy::ReplaceWithReplaceMethod,
+            true
         )
     } else {
         to_safe_name(
             &name.to_string(),
             ReplaceMethod::Replace(ReplaceChar::Underscore).compile(),
             DotHandlingPolicy::ReplaceWithReplaceMethod,
+            true
         )
     }
 }

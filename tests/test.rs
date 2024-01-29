@@ -204,78 +204,115 @@ fn test_to_safe_name() {
     assert_eq!("hel＂l？dk＊o／／.t⧵xt", to_safe_name(
         &"hel\"l?dk*o//.t\\xt".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!'))
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        true
     ));
 
     // 스페이스 제거 테스트
     assert_eq!("hello.txt", to_safe_name(
         &"    hello.txt      ".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!'))
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        true
+    ));
+    assert_eq!("hello.txt", to_safe_name(
+        &"     hello.txt      ".to_string(),
+        ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        true
+    ));
+    assert_eq!("     hello.txt", to_safe_name(
+        &"     hello.txt      ".to_string(),
+        ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        false
     ));
 
     // 마침표 제거 테스트
     assert_eq!("hello.txt....!", to_safe_name(
         &"hello.txt.....".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!'))
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        true
     ));
     assert_eq!("hello.txt.....", to_safe_name(
         &"hello.txt.....".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::NotCorrect)
-    );
+        DotHandlingPolicy::NotCorrect,
+        true
+    ));
     assert_eq!("hello.txt", to_safe_name(
         &"hello.txt.....".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Remove)
-    );
+        DotHandlingPolicy::Remove,
+        true
+    ));
     assert_eq!("hello.txt", to_safe_name(
         &"hello.txt.  ..  . .".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Remove)
-    );
+        DotHandlingPolicy::Remove,
+        true
+    ));
 
     // 빈 문자열 테스트
     assert_eq!("!", to_safe_name(
         &".....".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Remove)
-    );
+        DotHandlingPolicy::Remove,
+        true
+    ));
     assert_eq!("_", to_safe_name(
         &".....".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('.')).compile(),
-        DotHandlingPolicy::Remove)
-    );
+        DotHandlingPolicy::Remove,
+        true
+    ));
     
     // 예약어 체크
     assert_eq!("!com2.hello.txt!", to_safe_name(
         &"com2.hello.txt.".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')))
-    );
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        true
+    ));
+    assert_eq!("!com0.hello.txt!", to_safe_name(
+        &"com0.hello.txt.".to_string(),
+        ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        true
+    ));
+    assert_eq!("com0.hello.txt!", to_safe_name(
+        &"com0.hello.txt.".to_string(),
+        ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
+        DotHandlingPolicy::Replace(ReplaceChar::Charactor('!')),
+        false
+    ));
 
     // DotHandlingPolicy::ReplaceWithReplaceMethod 검사
     assert_eq!("hel!lo.txt....!", to_safe_name(
         &"hel*lo.txt.....".to_string(),
         ReplaceMethod::Replace(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::ReplaceWithReplaceMethod)
-    );
+        DotHandlingPolicy::ReplaceWithReplaceMethod,
+        true
+    ));
     assert_eq!("hel lo.txt", to_safe_name(
         &"hel*lo.txt.....".to_string(),
         ReplaceMethod::Replace(ReplaceChar::Space).compile(),
-        DotHandlingPolicy::ReplaceWithReplaceMethod)
-    );
+        DotHandlingPolicy::ReplaceWithReplaceMethod,
+        true
+    ));
     assert_eq!("hel⁇lo.txt....⁇", to_safe_name(
         &"hel*lo.txt.....".to_string(),
         ReplaceMethod::Replace(ReplaceChar::DubleQuestionMark).compile(),
-        DotHandlingPolicy::ReplaceWithReplaceMethod)
-    );
+        DotHandlingPolicy::ReplaceWithReplaceMethod,
+        true
+    ));
     assert_eq!("hel❓lo.txt....❓", to_safe_name(
         &"hel*lo.txt.....".to_string(),
         ReplaceMethod::Replace(ReplaceChar::RedQuestionMark).compile(),
-        DotHandlingPolicy::ReplaceWithReplaceMethod)
-    );
+        DotHandlingPolicy::ReplaceWithReplaceMethod,
+        true
+    ));
 }
 
 #[test]
@@ -285,7 +322,8 @@ fn test_to_safe_name_panic() {
     to_safe_name(
         &"hello.txt.....".to_string(),
         ReplaceMethod::Fullwidth(ReplaceChar::Charactor('!')).compile(),
-        DotHandlingPolicy::Replace(ReplaceChar::Space)
+        DotHandlingPolicy::Replace(ReplaceChar::Space),
+        true
     );
 }
 
